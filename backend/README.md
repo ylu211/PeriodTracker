@@ -17,12 +17,6 @@ $ npm run start
 # watch mode
 $ npm run start:dev
 
-## Run tests
-
-```bash
-# unit tests
-$ npm run test
-
 ## License
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
