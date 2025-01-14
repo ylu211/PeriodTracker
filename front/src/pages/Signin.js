@@ -8,6 +8,8 @@ import FormControl from '@mui/material/FormControl';
 import Header from '../components/Header'
 import { useNavigate } from "react-router";
 
+// STYLES CSS
+
 const Container = styled.div`
   display: flex;
   align-items: center;
@@ -15,7 +17,7 @@ const Container = styled.div`
     flex-direction: column;
   }
 `
-
+// Partie img
 const ContainerImg = styled.div`
   height: 80vh;
   width: 50%;
@@ -27,6 +29,8 @@ const ImgInContainer = styled.img`
   width: 100%;
   height: 90vh
 `
+
+// Partie formulaire de connexion
 const ContainerForm = styled.div`
   width: 50%;
   margin: 50px;
@@ -82,28 +86,51 @@ function Signin() {
   const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
   const [passwordError, setPasswordError] = React.useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
-  const email = document.getElementById('email');
-  const password = document.getElementById('password');
+  
   let navigate = useNavigate();
 
   const handleSubmit = (event) => {
-    if (emailError || passwordError) {
+    event.preventDefault();
+    /*if (emailError || passwordError) {
       event.preventDefault();
       return;
-    }
-    console.log(event);
-    const data = new FormData();
-    data.set("email", email.value);
-    data.set("password", password.value);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
-    console.log("je suis dans handleSubmit");
-    console.log(event.currentTarget);
+    }*/
+      const email = document.getElementById('email');
+      const password = document.getElementById('password');
+      const userData = {
+        email: email.value,
+        password: password.value,
+      };
+
+      // Appel API
+      fetch('http://localhost:3001/users/login', {
+        mode: 'cors',
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin' : '*'
+        },
+        body: JSON.stringify(userData),
+      })
+        .then(response => 
+          response.json()
+        )
+        .then(data => {
+          // Handle the response data here
+          console.log("ca a marché");
+          console.log("voici les data : ", data);
+          // Récupération du token stocké dans le localStorage
+          window.localStorage.setItem("token", data.token);
+          // redirection vers la page periodtracker
+          navigate('/periodtracker', { state: { token: data.token} });
+        })
+        .catch(error => {
+          // Handle any errors
+          console.log("il y a une erreur : ", error)
+        });
   };
 
-  const validateInputs = () => {
+  /*const validateInputs = () => {
 
     let isValid = true;
 
@@ -129,7 +156,7 @@ function Signin() {
     //TODO : revoir la redirection
     navigate('/periodtracker');
     return isValid;
-  };
+  };*/
 
     return (
       <div>
@@ -147,12 +174,12 @@ function Signin() {
             <Box component="form" onSubmit={handleSubmit} sx={{ '& .MuiTextField-root': { m: 1, width: '25ch' } }} autoComplete="off">
             <ContainerBoxForm>
               <FormControl>
-                <TextField required id="email" error={emailError} helperText={emailErrorMessage} label="Email Address" />
+                <TextField required id="email" label="Email Address" />
               </FormControl>
               <FormControl>
-                <TextField required id="password" error={passwordError} helperText={passwordErrorMessage} label="Password" type="password" autoComplete="current-password" />
+                <TextField required id="password" label="Password" type="password" autoComplete="current-password" />
               </FormControl>
-              <ButtonSubmit type="submit" onClick={validateInputs}>Let's go !</ButtonSubmit>
+              <ButtonSubmit type="submit" onClick={console.log("submit")}>Let's go !</ButtonSubmit>
               </ContainerBoxForm>
             
             </Box>

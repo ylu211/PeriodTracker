@@ -82,28 +82,53 @@ function Signup() {
   const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
   const [passwordError, setPasswordError] = React.useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
-  const email = document.getElementById('email');
-  const password = document.getElementById('password');
+  
   let navigate = useNavigate();
 
+  //console.log(email.value)
+
   const handleSubmit = (event) => {
-    if (emailError || passwordError) {
+    event.preventDefault();
+    //validateInputs();
+    /*if (emailError || passwordError) {
       event.preventDefault();
+      console.log("erreur");
       return;
-    }
-    console.log(event);
-    const data = new FormData();
-    data.set("email", email.value);
-    data.set("password", password.value);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+    }*/
+      const email = document.getElementById('email').value;
+      const name = document.getElementById('name').value;
+      const password = document.getElementById('password').value;
+    const userData = {
+      email: email,
+      password: password,
+      name: name,
+    };
+
+    fetch('http://localhost:3001/users/register', {
+      mode: 'cors',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin' : '*'
+      },
+      body: JSON.stringify(userData),
+    })
+      .then(response => response.json())
+      .then(data => {
+        // Handle the response data here
+        console.log("ca a marché");
+        console.log("voici les data : ", data);
+        navigate('/periodtracker');
+      })
+      .catch(error => {
+        // Handle any errors
+        console.log("il y a une erreur : ", error)
+      });
+
     console.log("je suis dans handleSubmit");
-    console.log(event.currentTarget);
   };
 
-  const validateInputs = () => {
+  /*const validateInputs = () => {
 
     let isValid = true;
 
@@ -127,9 +152,9 @@ function Signup() {
     }
     console.log("je suis dans validateInputs");
     //TODO : revoir la redirection
-    navigate('/periodtracker');
+    //navigate('/periodtracker');
     return isValid;
-  };
+  };*/
 
     return (
       <div>
@@ -150,9 +175,12 @@ function Signup() {
                 <TextField required id="email" error={emailError} helperText={emailErrorMessage} label="Email Address" />
               </FormControl>
               <FormControl>
+                <TextField required id="name" label="Name" />
+              </FormControl>
+              <FormControl>
                 <TextField required id="password" error={passwordError} helperText={passwordErrorMessage} label="Password" type="password" autoComplete="current-password" />
               </FormControl>
-              <ButtonSubmit type="submit" onClick={validateInputs}>Let's go !</ButtonSubmit>
+              <ButtonSubmit type="submit" onClick={console.log("je clique")}>Let's go !</ButtonSubmit>
               </ContainerBoxForm>
             
             </Box>
