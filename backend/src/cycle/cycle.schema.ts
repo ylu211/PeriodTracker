@@ -8,10 +8,10 @@ export class Cycle extends Document {
   userId: User;
 
   @Prop({ required: true })
-  startDate: Date;
+  startDate: string;
 
   @Prop({ required: true })
-  endDate: Date;
+  endDate: string;
 
   @Prop({ required: true })
   symptoms: string;
