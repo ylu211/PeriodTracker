@@ -17,6 +17,7 @@ import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { useLocation } from "react-router";
 import { jwtDecode } from "jwt-decode";
+import "core-js/stable/atob";
 
 const Container = styled.div`
   display: flex;
@@ -106,11 +107,12 @@ function PeriodTracker() {
 
   //Récupération du token stocké dans le localStorage
   let tokenStored = window.localStorage.getItem('token');
+  let idStored = window.localStorage.getItem('id');
 
   if (tokenStored === null){
     console.log("il n'y a pas de token");
   }else{
-    const decodedToken = jwtDecode(tokenStored);
+    const decodedToken = jwtDecode(tokenStored, { header: true });
     // récupérer l'id du user grâce au mail contenu dans le token
     fetch(`http://localhost:3001/users/mail/${decodedToken.email}`, {
       mode: 'cors',
@@ -289,7 +291,7 @@ function PeriodTracker() {
         headers: {
           'Content-Type': 'application/json',
           'Access-Control-Allow-Origin' : '*',
-          'Authorization': `Bearer ${tokenStored}`, // Ajout du token pour vérifier l'authentification côté backend
+          //'Authorization': `Bearer ${tokenStored}`, // Ajout du token pour vérifier l'authentification côté backend
         },
         body: JSON.stringify(userData),
       })

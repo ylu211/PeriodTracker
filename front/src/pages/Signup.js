@@ -104,6 +104,8 @@ function Signup() {
       name: name,
     };
 
+    console.log(userData);
+
     fetch('http://localhost:3001/users/register', {
       mode: 'cors',
       method: 'POST',
@@ -118,7 +120,8 @@ function Signup() {
         // Handle the response data here
         console.log("ca a marché");
         console.log("voici les data : ", data);
-        navigate('/periodtracker');
+        //navigate('/periodtracker');
+        navigate('/signin');
       })
       .catch(error => {
         // Handle any errors

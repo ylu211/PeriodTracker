@@ -117,12 +117,13 @@ function Signin() {
         )
         .then(data => {
           // Handle the response data here
-          console.log("ca a marché");
+          console.log("ca a marché, page login");
           console.log("voici les data : ", data);
           // Récupération du token stocké dans le localStorage
-          window.localStorage.setItem("token", data.token);
+            window.localStorage.setItem("token", data.token);
+            navigate('/periodtracker', { state: { token: data.token} });
+
           // redirection vers la page periodtracker
-          navigate('/periodtracker', { state: { token: data.token} });
         })
         .catch(error => {
           // Handle any errors
