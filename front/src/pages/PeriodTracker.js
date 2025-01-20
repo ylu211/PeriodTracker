@@ -108,11 +108,13 @@ function PeriodTracker() {
   //Récupération du token stocké dans le localStorage
   let tokenStored = window.localStorage.getItem('token');
   let idStored = window.localStorage.getItem('id');
+  console.log(tokenStored);
+  console.log("est-ce que ça s'affiche ?");
 
   if (tokenStored === null){
     console.log("il n'y a pas de token");
   }else{
-    const decodedToken = jwtDecode(tokenStored, { header: true });
+    const decodedToken = jwtDecode(tokenStored);
     // récupérer l'id du user grâce au mail contenu dans le token
     fetch(`http://localhost:3001/users/mail/${decodedToken.email}`, {
       mode: 'cors',
@@ -124,7 +126,7 @@ function PeriodTracker() {
     .then(response => response.json())
         .then(data => {
           // Handle the response data here
-          //console.log("voici les data : ", data);
+          console.log("voici les data : ", data);
           window.localStorage.setItem("id", data._id);
         })
         .catch(error => {
