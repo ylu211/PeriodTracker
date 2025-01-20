@@ -31,10 +31,14 @@ export class UserController {
         if (!checkLogin) {
             throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
         }
-    
+
+        if (!process.env.JWT_SECRET) {
+            throw new HttpException('JWT_SECRET is not defined in environment variables', HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
         const token = jwt.sign(
             { email }, 
-            process.env.JWT_SECRET, 
+            process.env.JWT_SECRET as string, 
         );
     
         return { 

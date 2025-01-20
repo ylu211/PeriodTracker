@@ -7,6 +7,7 @@ services:
     environment:
       DATABASE_NAME: ${DATABASE_NAME}
       DATABASE_URI: ${DATABASE_URI}
+      JWT_SECRET: secretKey
     ports:
       - '3001:3001'
     depends_on:
