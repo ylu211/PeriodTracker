@@ -85,9 +85,6 @@ function Signup() {
   
   let navigate = useNavigate();
 
-  //console.log(email.value)
-  console.log(process.env.REACT_APP_BACKENDURL);
-
   const handleSubmit = (event) => {
     event.preventDefault();
     //validateInputs();
@@ -107,7 +104,7 @@ function Signup() {
 
     console.log(userData);
 
-    fetch(`${process.env.REACT_APP_BACKENDURL}users/register`, {
+    fetch(`http://localhost:3001/users/register`, {
       mode: 'cors',
       method: 'POST',
       headers: {

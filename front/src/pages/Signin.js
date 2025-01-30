@@ -103,7 +103,7 @@ function Signin() {
       };
 
       // Appel API
-      fetch('http://localhost:3001/users/login', {
+      fetch('http://backend-service:3001/users/login', {
         mode: 'cors',
         method: 'POST',
         headers: {
