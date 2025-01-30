@@ -22,6 +22,17 @@ stringData:
 
 ---
 
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: default
+  namespace: default
+spec:
+  mtls:
+    mode: STRICT
+
+---
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -69,8 +80,19 @@ spec:
   - protocol: TCP
     port: 3001
     targetPort: 3001
-  type: NodePort
+  type: ClusterIP
 
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: backend-mtls
+  namespace: default
+spec:
+  host: backend-service.default.svc.cluster.local
+  trafficPolicy:
+    tls:
+      mode: ISTIO_MUTUAL  # Utilise mTLS pour ce service
 
 ---
 
@@ -108,6 +130,18 @@ spec:
     port: 27017
     targetPort: 27017
   type: ClusterIP
+
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: mongodb-mtls
+  namespace: default
+spec:
+  host: mongodb.default.svc.cluster.local
+  trafficPolicy:
+    tls:
+      mode: ISTIO_MUTUAL  # Utilise mTLS pour ce service
 
 ---
 
@@ -150,6 +184,18 @@ spec:
   selector:
     app: periodtracker-front
   type: NodePort
+
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: front-mtls
+  namespace: default
+spec:
+  host: periodtracker-front-service.default.svc.cluster.local
+  trafficPolicy:
+    tls:
+      mode: ISTIO_MUTUAL  # Utilise mTLS pour ce service
 
 ---
 apiVersion: networking.istio.io/v1alpha3
