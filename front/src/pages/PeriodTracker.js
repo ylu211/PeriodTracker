@@ -116,7 +116,7 @@ function PeriodTracker() {
   }else{
     const decodedToken = jwtDecode(tokenStored);
     // récupérer l'id du user grâce au mail contenu dans le token
-    fetch(`http://localhost:3001/users/mail/${decodedToken.email}`, {
+    fetch(`${process.env.REACT_APP_BACKENDURL}users/mail/${decodedToken.email}`, {
       mode: 'cors',
       method: "GET",
       headers: {
@@ -203,7 +203,7 @@ function PeriodTracker() {
         }
       });*/
 
-      fetch(`http://localhost:3001/cycles/user/${userId}`, {
+      fetch(`${process.env.REACT_APP_BACKENDURL}cycles/user/${userId}`, {
         mode: 'cors',
         method: "GET",
         headers: {
@@ -287,7 +287,7 @@ function PeriodTracker() {
           symptoms: flowValue
       };
 
-      fetch(`http://localhost:3001/cycles/user/${userId}`, {
+      fetch(`${process.env.REACT_APP_BACKENDURL}cycles/user/${userId}`, {
         mode: 'cors',
         method: 'POST',
         headers: {

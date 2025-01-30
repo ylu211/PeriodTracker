@@ -3,7 +3,12 @@ kind: ConfigMap
 metadata:
   name: backend-config
 data:
-  DATABASE_URI: mongodb://mongodb:27017/period-tracker
+  #DATABASE_URI: mongodb://mongodb:27017/period-tracker
+  DATABASE_URI: mongodb://mongodb.default.svc.cluster.local:27017/period-tracker
+  #REACT_APP_BACKENDURL: localhost:3001/
+  #REACT_APP_BACKENDURL: /api
+  #REACT_APP_BACKENDURL: http://backend-service.default.svc.cluster.local:3001/
+  REACT_APP_BACKENDURL: "/api/"
 
 ---
 
@@ -16,7 +21,6 @@ stringData:
   JWT_SECRET: "secretKey"
 
 ---
-
 
 apiVersion: apps/v1
 kind: Deployment
@@ -50,6 +54,8 @@ spec:
             secretKeyRef:
               name: backend-secret
               key: JWT_SECRET
+        - name: PORT
+          value: "3001"
 ---
 
 apiVersion: v1
@@ -61,9 +67,9 @@ spec:
     app: backend
   ports:
   - protocol: TCP
-    port: 80
+    port: 3001
     targetPort: 3001
-  type: ClusterIP
+  type: NodePort
 
 
 ---
@@ -93,7 +99,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: mongodb-service
+  name: mongodb
 spec:
   selector:
     app: mongodb
@@ -121,8 +127,14 @@ spec:
     spec:
       containers:
       - name: periodtracker-front
-        image: ynafi/periodtracker-front:1
+        image: ynafi/periodtracker-front:2
         imagePullPolicy: Always
+        env:
+        - name: REACT_APP_BACKENDURL
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: REACT_APP_BACKENDURL
 
 ---
 
@@ -168,18 +180,19 @@ spec:
   http:
     - match:
         - uri:
-            prefix: "/api"        # Toute URL qui commence par "/api" est routée vers le backend NestJS
+            prefix: "/api/"        # Toute URL qui commence par "/api" est routée vers le backend NestJS
       route:
         - destination:
-            host: backend-service  # Nom du service backend (NestJS)
+            #host: http://backend-service.default.svc.cluster.local/  # Nom du service backend (NestJS)
+            host: backend-service
             port:
-              number: 80         # Port sur lequel le service backend est exposé
+              number: 3001         # Port sur lequel le service backend est exposé
     - match:
         - uri:
             prefix: "/"  # Tout le trafic va vers le frontend
       corsPolicy:
         allowOrigins:
-          - exact: "http://localhost:3000"  # Origine autorisée (ex: ton frontend en local)
+          - exact: "*"  # Origine autorisée (ex: ton frontend en local)
         allowMethods:
           - GET
           - POST
@@ -198,6 +211,5 @@ spec:
         - destination:
             host: periodtracker-front-service.default.svc.cluster.local # le service front
             port:
-              number: 80
-
+              number: 3000
 
