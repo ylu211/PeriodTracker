@@ -85,9 +85,6 @@ function Signup() {
   
   let navigate = useNavigate();
 
-  //console.log(email.value)
-  console.log(process.env.REACT_APP_BACKENDURL);
-
   const handleSubmit = (event) => {
     event.preventDefault();
     //validateInputs();
