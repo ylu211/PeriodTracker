@@ -1,0 +1,203 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+data:
+  DATABASE_URI: mongodb://mongodb:27017/period-tracker
+
+---
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: backend-secret
+type: Opaque
+stringData:
+  JWT_SECRET: "secretKey"
+
+---
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: yvonnelu/backend-backend:latest
+        ports:
+        - containerPort: 3001
+        env:
+        - name: DATABASE_NAME
+          value: "period-tracker"
+        - name: DATABASE_URI
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: DATABASE_URI
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: backend-secret
+              key: JWT_SECRET
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+spec:
+  selector:
+    app: backend
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 3001
+  type: ClusterIP
+
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongodb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongodb
+  template:
+    metadata:
+      labels:
+        app: mongodb
+    spec:
+      containers:
+      - name: mongodb
+        image: mongo:latest
+        ports:
+        - containerPort: 27017
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb-service
+spec:
+  selector:
+    app: mongodb
+  ports:
+  - protocol: TCP
+    port: 27017
+    targetPort: 27017
+  type: ClusterIP
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: periodtracker-front
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: periodtracker-front
+  template:
+    metadata:
+      labels:
+        app: periodtracker-front
+    spec:
+      containers:
+      - name: periodtracker-front
+        image: ynafi/periodtracker-front:1
+        imagePullPolicy: Always
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: periodtracker-front-service
+spec:
+  ports:
+    - name: http
+      targetPort: 3000
+      port: 3000
+  selector:
+    app: periodtracker-front
+  type: NodePort
+
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: frontend-gateway
+spec:
+  selector:
+    istio: ingressgateway # Assurez-vous que c'est bien ce que vous utilisez
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: frontend-virtualservice
+spec:
+  hosts:
+    - "*"  # Accepte toutes les requêtes
+  gateways:
+    - frontend-gateway
+  http:
+    - match:
+        - uri:
+            prefix: "/api"        # Toute URL qui commence par "/api" est routée vers le backend NestJS
+      route:
+        - destination:
+            host: backend-service  # Nom du service backend (NestJS)
+            port:
+              number: 80         # Port sur lequel le service backend est exposé
+    - match:
+        - uri:
+            prefix: "/"  # Tout le trafic va vers le frontend
+      corsPolicy:
+        allowOrigins:
+          - exact: "http://localhost:3000"  # Origine autorisée (ex: ton frontend en local)
+        allowMethods:
+          - GET
+          - POST
+          - PUT
+          - DELETE
+          - OPTIONS
+        allowHeaders:
+          - Authorization
+          - Content-Type
+        exposeHeaders:
+          - Authorization
+          - Content-Length
+        maxAge: "24h"  # Durée de mise en cache des requêtes OPTIONS
+        allowCredentials: true  # Permet l'envoi de cookies et d'identifiants
+      route:
+        - destination:
+            host: periodtracker-front-service.default.svc.cluster.local # le service front
+            port:
+              number: 80
+
+
