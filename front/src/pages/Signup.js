@@ -87,15 +87,9 @@ function Signup() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    //validateInputs();
-    /*if (emailError || passwordError) {
-      event.preventDefault();
-      console.log("erreur");
-      return;
-    }*/
-      const email = document.getElementById('email').value;
-      const name = document.getElementById('name').value;
-      const password = document.getElementById('password').value;
+    const email = document.getElementById('email').value;
+    const name = document.getElementById('name').value;
+    const password = document.getElementById('password').value;
     const userData = {
       email: email,
       password: password,
@@ -115,47 +109,14 @@ function Signup() {
     })
       .then(response => response.json())
       .then(data => {
-        // Handle the response data here
-        console.log("ca a marché");
-        console.log("voici les data : ", data);
-        //navigate('/periodtracker');
         navigate('/signin');
       })
       .catch(error => {
-        // Handle any errors
         console.log("il y a une erreur : ", error)
       });
 
-    console.log("je suis dans handleSubmit");
   };
 
-  /*const validateInputs = () => {
-
-    let isValid = true;
-
-    if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
-      setEmailError(true);
-      setEmailErrorMessage('Please enter a valid email address.');
-      console.log(setEmailErrorMessage)
-      isValid = false;
-    } else {
-      setEmailError(false);
-      setEmailErrorMessage('');
-    }
-
-    if (!password.value || password.value.length < 6) {
-      setPasswordError(true);
-      setPasswordErrorMessage('Password must be at least 6 characters long.');
-      isValid = false;
-    } else {
-      setPasswordError(false);
-      setPasswordErrorMessage('');
-    }
-    console.log("je suis dans validateInputs");
-    //TODO : revoir la redirection
-    //navigate('/periodtracker');
-    return isValid;
-  };*/
 
     return (
       <div>

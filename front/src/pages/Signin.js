@@ -91,10 +91,6 @@ function Signin() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    /*if (emailError || passwordError) {
-      event.preventDefault();
-      return;
-    }*/
       const email = document.getElementById('email');
       const password = document.getElementById('password');
       const userData = {
@@ -116,48 +112,13 @@ function Signin() {
           response.json()
         )
         .then(data => {
-          // Handle the response data here
-          console.log("ca a marché, page login");
-          console.log("voici les data : ", data);
-          // Récupération du token stocké dans le localStorage
             window.localStorage.setItem("token", data.token);
             navigate('/periodtracker', { state: { token: data.token} });
-
-          // redirection vers la page periodtracker
         })
         .catch(error => {
-          // Handle any errors
           console.log("il y a une erreur : ", error)
         });
   };
-
-  /*const validateInputs = () => {
-
-    let isValid = true;
-
-    if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
-      setEmailError(true);
-      setEmailErrorMessage('Please enter a valid email address.');
-      console.log(setEmailErrorMessage)
-      isValid = false;
-    } else {
-      setEmailError(false);
-      setEmailErrorMessage('');
-    }
-
-    if (!password.value || password.value.length < 6) {
-      setPasswordError(true);
-      setPasswordErrorMessage('Password must be at least 6 characters long.');
-      isValid = false;
-    } else {
-      setPasswordError(false);
-      setPasswordErrorMessage('');
-    }
-    console.log("je suis dans validateInputs");
-    //TODO : revoir la redirection
-    navigate('/periodtracker');
-    return isValid;
-  };*/
 
     return (
       <div>

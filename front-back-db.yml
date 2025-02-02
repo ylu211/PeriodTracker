@@ -3,11 +3,7 @@ kind: ConfigMap
 metadata:
   name: backend-config
 data:
-  #DATABASE_URI: mongodb://mongodb:27017/period-tracker
   DATABASE_URI: mongodb://mongodb.default.svc.cluster.local:27017/period-tracker
-  #REACT_APP_BACKENDURL: localhost:3001/
-  #REACT_APP_BACKENDURL: /api
-  #REACT_APP_BACKENDURL: http://backend-service.default.svc.cluster.local:3001/
   REACT_APP_BACKENDURL: "/api/"
 
 ---
@@ -204,8 +200,7 @@ metadata:
   name: frontend-gateway
 spec:
   selector:
-    istio: ingressgateway # Assurez-vous que c'est bien ce que vous utilisez
-  servers:
+    istio: ingressgateway
   - port:
       number: 80
       name: http

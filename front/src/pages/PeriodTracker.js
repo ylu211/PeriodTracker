@@ -125,12 +125,9 @@ function PeriodTracker() {
     })
     .then(response => response.json())
         .then(data => {
-          // Handle the response data here
-          console.log("voici les data : ", data);
           window.localStorage.setItem("id", data._id);
         })
         .catch(error => {
-          // Handle any errors
           console.log("erreur : ", error)
         });
     
@@ -138,23 +135,14 @@ function PeriodTracker() {
 
   // récupérer l'id du user
   const userId = window.localStorage.getItem('id');
-  //console.log(userId);
 
   function getRandomNumber(min, max) {
     return Math.round(Math.random() * (max - min) + min);
   }
 
   function fakeFetch(date, { signal }) {
-    return new Promise((resolve, reject) => {
-      //const timeout = setTimeout(() => {
-        //const daysInMonth = date.daysInMonth();
-        //const daysToHighlight = periodArray2 > 0 ? periodArray2 : [1, 2, 3].map(() => getRandomNumber(1, daysInMonth));
-  
-        //resolve({ daysToHighlight });
-      //}, 500);
-  
+    return new Promise((resolve, reject) => { 
       signal.onabort = () => {
-        //clearTimeout(timeout);
         reject(new DOMException('aborted', 'AbortError'));
       };
     });
@@ -181,27 +169,11 @@ function PeriodTracker() {
 
   const requestAbortController = React.useRef(null);
   const [isLoading, setIsLoading] = React.useState(false);
-  //let highlightedDays =[]; //les jours où il y a la goutte, à remplacer par les dates de la bdd
   const [highlightedDays, setHighlightedDays] = React.useState([]);
-  //console.log(highlightedDays)
   let daysFromDbArray = [];
 
   const fetchHighlightedDays = (date) => {
     const controller = new AbortController();
-    
-    /*fakeFetch(date, {
-      signal: controller.signal,
-    })
-      .then(({ daysToHighlight }) => {
-        setHighlightedDays(daysToHighlight);
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        // ignore the error if it's caused by `controller.abort`
-        if (error.name !== 'AbortError') {
-          throw error;
-        }
-      });*/
 
       fetch(`${process.env.REACT_APP_BACKENDURL}cycles/user/${userId}`, {
         mode: 'cors',
@@ -212,15 +184,10 @@ function PeriodTracker() {
       })
       .then(response => response.json())
           .then(data => {
-            // Handle the response data here
-            //console.log("voici les data : ", data);
             data.forEach(oneData => {
-              //console.log(oneData.startDate);
               let dateOfPeriod = new Date(oneData.startDate);
               dateOfPeriod = {"day" : dateOfPeriod.getDate(), "month": dateOfPeriod.getMonth(), "year": dateOfPeriod.getFullYear()};
-              periodArray2.push(dateOfPeriod);
-              //console.log(periodArray2.length)
-              
+              periodArray2.push(dateOfPeriod);              
               periodArray2.forEach(element => {
                 daysFromDbArray.push(element.day);
               });
@@ -229,27 +196,13 @@ function PeriodTracker() {
             });
           })
           .catch(error => {
-            // Handle any errors
             console.log("erreur : ", error)
           });
-
-          
-          
-      
-
     requestAbortController.current = controller;
   };
   
-  //console.log(daysFromDbArray);
-  //console.log(highlightedDays);
 
   React.useEffect(() => {
-    //setHighlightedDays(daysFromDbArray);
-    /*for(let i=0; i<periodArray2.length; i++){
-      highlightedDays.push(periodArray2[i].day);
-      console.log(periodArray2[i].day)
-    }*/
-
     fetchHighlightedDays(initialValue);
     // abort request on unmount
     return () => requestAbortController.current?.abort();
@@ -264,15 +217,12 @@ function PeriodTracker() {
 
     setIsLoading(true);
     setHighlightedDays([]);
-    //highlightedDays = []
     fetchHighlightedDays(date);
   };
 
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    //console.log(event);
-    console.log("je valide");
 
     let flowValue;
       for (let radio of flow) {
@@ -303,19 +253,10 @@ function PeriodTracker() {
           fetchHighlightedDays(initialValue);
         })
         .catch(error => {
-          // Handle any errors
           console.log("il y a une erreur : ", error);
         });
 
   };
-
-  const validateInput = () => {
-    
-  }
-
-  //console.log("je veux voir periodArray : ", periodArray);
-  console.log("je veux voir periodArray2 : ", periodArray2);
-
 
   return (
     <div>
