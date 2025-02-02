@@ -135,11 +135,11 @@ kubectl apply -f front-back-db.yml
 Verify that everything works with : 
 ````
 kubectl get pods
-```
+````
 
 Open project with istio : 
 `````
 kubectl -n istio-system port-forward deployment/istio-ingressgateway 30819:8080
-```
+`````
 
 Then go to your browser and access to the app via localhost:30819
